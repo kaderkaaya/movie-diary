@@ -45,6 +45,7 @@ func getEnv(key, fallback string) string {
 	return value
 }
 
+// Burda mustenv fonksiyonu ile env dosyasındaki key’leri alıyoruz ve eğer boşsa uygulamayı baslatmadan öldürür.
 func mustEnv(key string) string {
 	v := os.Getenv(key)
 	if v == "" {
