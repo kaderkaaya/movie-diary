@@ -11,7 +11,7 @@ import (
 	utils "moviediary/pkg/utils"
 )
 
-func MovieDiaryRouter(authHandler *handlers.AuthHandler) *gin.Engine {
+func MovieDiaryRouter(authHandler *handlers.AuthHandler, tokenHandler *handlers.TokenHandler) *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger()) //r.Use olusturunca middle olsuturduk.
 	r.Use(gin.Recovery())
@@ -23,7 +23,11 @@ func MovieDiaryRouter(authHandler *handlers.AuthHandler) *gin.Engine {
 	))
 
 	auth := r.Group("/auth")
+	//auth.Use(middleware.AuthMiddleware(config.Load().JwtSecret))
 	auth.POST("/register", authHandler.Register)
 	auth.POST("/login", authHandler.Login)
+
+	token := r.Group("/token")
+	token.POST("/refresh", tokenHandler.RefreshToken)
 	return r
 }

@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	model "moviediary/internal/model"
+	model_dto "moviediary/internal/model/dto"
 	service "moviediary/internal/service"
 	utils "moviediary/pkg/utils"
 	"net/http"
@@ -18,7 +18,7 @@ func NewAuthHandler(service *service.AuthService) *AuthHandler {
 }
 
 func (authHandler *AuthHandler) Register(c *gin.Context) {
-	var req model.RegisterRequest
+	var req model_dto.RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		utils.Fail(c, http.StatusBadRequest, err.Error())
 		return
@@ -34,7 +34,7 @@ func (authHandler *AuthHandler) Register(c *gin.Context) {
 }
 
 func (authHandler *AuthHandler) Login(c *gin.Context) {
-	var req model.LoginRequest
+	var req model_dto.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		utils.Fail(c, http.StatusBadRequest, err.Error())
 		return

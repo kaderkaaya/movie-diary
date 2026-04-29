@@ -12,11 +12,12 @@ import (
 )
 
 type AuthService struct {
-	userRepository *repository.UserRepository
+	userRepository  *repository.UserRepository
+	tokenRepository *repository.TokenRepository
 }
 
-func NewAuthService(userRepository *repository.UserRepository) *AuthService {
-	return &AuthService{userRepository: userRepository}
+func NewAuthService(userRepository *repository.UserRepository, tokenRepository *repository.TokenRepository) *AuthService {
+	return &AuthService{userRepository: userRepository, tokenRepository: tokenRepository}
 }
 
 func (authService *AuthService) Register(ctx context.Context, username, email, password string) (*model.User, error) {
@@ -80,7 +81,7 @@ func (authService *AuthService) Login(ctx context.Context, email, password strin
 		return nil, err
 	}
 
-	authService.userRepository.CreateUserToken(ctx, user.ID, token)
+	authService.tokenRepository.CreateUserToken(ctx, user.ID, token)
 	return &model.AuthResponse{
 		User:  user,
 		Token: token,

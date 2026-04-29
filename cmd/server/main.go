@@ -29,10 +29,12 @@ func main() {
 	}
 
 	userRepository := repository.NewUserRepository(db)
-	authService := service.NewAuthService(userRepository)
+	tokenRepository := repository.NewTokenRepository(db)
+	authService := service.NewAuthService(userRepository, tokenRepository)
 	authHandler := handlers.NewAuthHandler(authService)
-	
-	router := apphttp.MovieDiaryRouter(authHandler)
+	tokenHandler := handlers.NewTokenHandler(service.NewTokenService(tokenRepository))
+
+	router := apphttp.MovieDiaryRouter(authHandler, tokenHandler)
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "ok"})
 	})

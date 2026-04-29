@@ -76,3 +76,9 @@ Detaylar:
 
   * `Create` ile veri yazıyor
   * `FindByEmail` ile veri okuyor
+
+
+  if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+- burda gormun kendinden kaynaklı user bulamadığı için hata dönüyor ondan kaynaklı bunu ekledik.
