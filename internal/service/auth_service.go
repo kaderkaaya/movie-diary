@@ -4,6 +4,7 @@ import (
 	"context"
 	model "moviediary/internal/model"
 	repository "moviediary/internal/repository"
+	apperror "moviediary/pkg/apperror"
 	utils "moviediary/pkg/utils"
 )
 
@@ -18,7 +19,20 @@ func NewAuthService(userRepository *repository.UserRepository) *AuthService {
 func (authService *AuthService) Register(ctx context.Context, username, email, password string) (*model.User, error) {
 	hashedPassword, err := utils.HashPassword(password)
 	if err != nil {
+		return nil, apperror.ErrPasswordEmpty
+	}
+	if email == "" {
+		return nil, apperror.ErrEmailEmpty
+	}
+	if username == "" {
+		return nil, apperror.ErrUserEmpty
+	}
+	existingUser, err := authService.userRepository.FindByEmail(ctx, email)
+	if err != nil {
 		return nil, err
+	}
+	if existingUser != nil {
+		return nil, apperror.ErrEmailAlreadyExists
 	}
 	user, err := authService.userRepository.CreateUser(ctx, username, email, hashedPassword)
 	if err != nil {
