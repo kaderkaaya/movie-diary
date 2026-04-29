@@ -24,5 +24,6 @@ func MovieDiaryRouter(authHandler *handlers.AuthHandler) *gin.Engine {
 
 	auth := r.Group("/auth")
 	auth.POST("/register", authHandler.Register)
+	auth.POST("/login", authHandler.Login)
 	return r
 }

@@ -32,3 +32,19 @@ func (authHandler *AuthHandler) Register(c *gin.Context) {
 
 	utils.Ok(c, http.StatusOK, user, "User registered successfully")
 }
+
+func (authHandler *AuthHandler) Login(c *gin.Context) {
+	var req model.LoginRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.Fail(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	user, err := authHandler.service.Login(c.Request.Context(), req.Email, req.Password)
+	if err != nil {
+		utils.Fail(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	utils.Ok(c, http.StatusOK, user, "User logged in successfully")
+}

@@ -6,4 +6,6 @@ var (
 	ErrUserEmpty          = CreateError(1003, "User cant be empty")
 	ErrEmailAlreadyExists = CreateError(1004, "Email already exists")
 	ErrPasswordHashError  = CreateError(1005, "Password hash error")
+	ErrUserNotFound       = CreateError(1006, "User not found")
+	ErrInvalidPassword    = CreateError(1007, "Invalid password")
 )
