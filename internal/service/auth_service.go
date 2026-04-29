@@ -7,6 +7,7 @@ import (
 	repository "moviediary/internal/repository"
 	apperror "moviediary/pkg/apperror"
 	utils "moviediary/pkg/utils"
+	"strings"
 	"time"
 )
 
@@ -19,34 +20,44 @@ func NewAuthService(userRepository *repository.UserRepository) *AuthService {
 }
 
 func (authService *AuthService) Register(ctx context.Context, username, email, password string) (*model.User, error) {
-	if password == "" {
-		return nil, apperror.ErrPasswordEmpty
-	}
-	hashedPassword, err := utils.HashPassword(password)
-	if err != nil {
-		return nil, apperror.ErrPasswordHashError
-	}
-	if email == "" {
-		return nil, apperror.ErrEmailEmpty
-	}
+	username = strings.TrimSpace(username)
+	email = strings.ToLower(strings.TrimSpace(email))
+
 	if username == "" {
 		return nil, apperror.ErrUserEmpty
 	}
+
+	if email == "" {
+		return nil, apperror.ErrEmailEmpty
+	}
+
+	if password == "" {
+		return nil, apperror.ErrPasswordEmpty
+	}
+
 	existingUser, err := authService.userRepository.FindByEmail(ctx, email)
 	if err != nil {
 		return nil, err
 	}
+
 	if existingUser != nil {
 		return nil, apperror.ErrEmailAlreadyExists
 	}
+
+	hashedPassword, err := utils.HashPassword(password)
+	if err != nil {
+		return nil, apperror.ErrPasswordHashError
+	}
+
 	user, err := authService.userRepository.CreateUser(ctx, username, email, hashedPassword)
 	if err != nil {
 		return nil, err
 	}
+
 	return user, nil
 }
 
-func (authService *AuthService) Login(ctx context.Context, email, password string) (*model.User, error) {
+func (authService *AuthService) Login(ctx context.Context, email, password string) (*model.AuthResponse, error) {
 	if email == "" {
 		return nil, apperror.ErrEmailEmpty
 	}
@@ -68,6 +79,10 @@ func (authService *AuthService) Login(ctx context.Context, email, password strin
 	if err != nil {
 		return nil, err
 	}
+
 	authService.userRepository.CreateUserToken(ctx, user.ID, token)
-	return user, nil
+	return &model.AuthResponse{
+		User:  user,
+		Token: token,
+	}, nil
 }

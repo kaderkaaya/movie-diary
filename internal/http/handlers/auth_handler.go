@@ -30,7 +30,7 @@ func (authHandler *AuthHandler) Register(c *gin.Context) {
 		return
 	}
 
-	utils.Ok(c, http.StatusOK, user, "User registered successfully")
+	utils.Success(c, http.StatusOK, "user", user, "User logged in successfully")
 }
 
 func (authHandler *AuthHandler) Login(c *gin.Context) {
@@ -46,5 +46,5 @@ func (authHandler *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	utils.Ok(c, http.StatusOK, user, "User logged in successfully")
+	utils.Success(c, http.StatusOK, "user", user, "User logged in successfully")
 }

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	model "moviediary/internal/model"
 
 	"time"
@@ -32,6 +33,9 @@ func (userRepository *UserRepository) CreateUser(ctx context.Context, username, 
 func (userRepository *UserRepository) FindByEmail(ctx context.Context, email string) (*model.User, error) {
 	var user model.User
 	if err := userRepository.db.WithContext(ctx).Where("email = ?", email).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return &user, nil

@@ -10,6 +10,14 @@ func Ok(c *gin.Context, status int, data any, message string) {
 	})
 }
 
+func Success(c *gin.Context, status int, key string, data any, message string) {
+	c.JSON(status, gin.H{
+		"success": true,
+		key:       data,
+		"message": message,
+	})
+}
+
 func Fail(c *gin.Context, status int, message string) {
 	c.JSON(status, gin.H{
 		"success": false,
