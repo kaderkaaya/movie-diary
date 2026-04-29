@@ -4,6 +4,7 @@ import (
 	"context"
 	model "moviediary/internal/model"
 	repository "moviediary/internal/repository"
+	utils "moviediary/pkg/utils"
 )
 
 type AuthService struct {
@@ -15,7 +16,11 @@ func NewAuthService(userRepository *repository.UserRepository) *AuthService {
 }
 
 func (authService *AuthService) Register(ctx context.Context, username, email, password string) (*model.User, error) {
-	user, err := authService.userRepository.CreateUser(ctx, username, email, password)
+	hashedPassword, err := utils.HashPassword(password)
+	if err != nil {
+		return nil, err
+	}
+	user, err := authService.userRepository.CreateUser(ctx, username, email, hashedPassword)
 	if err != nil {
 		return nil, err
 	}
