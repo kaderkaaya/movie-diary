@@ -17,9 +17,12 @@ func NewAuthService(userRepository *repository.UserRepository) *AuthService {
 }
 
 func (authService *AuthService) Register(ctx context.Context, username, email, password string) (*model.User, error) {
+	if password == "" {
+		return nil, apperror.ErrPasswordEmpty
+	}
 	hashedPassword, err := utils.HashPassword(password)
 	if err != nil {
-		return nil, apperror.ErrPasswordEmpty
+		return nil, apperror.ErrPasswordHashError
 	}
 	if email == "" {
 		return nil, apperror.ErrEmailEmpty
