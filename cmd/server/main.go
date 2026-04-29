@@ -2,10 +2,13 @@ package main
 
 import (
 	"log"
-	"moviediary/internal/model"
+	config "moviediary/internal/config"
+	apphttp "moviediary/internal/http"
+	handlers "moviediary/internal/http/handlers"
+	model "moviediary/internal/model"
+	repository "moviediary/internal/repository"
+	service "moviediary/internal/service"
 	"os"
-
-	"moviediary/internal/config"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -14,6 +17,7 @@ import (
 func main() {
 	_ = godotenv.Load()
 	cfg := config.Load()
+
 	db, err := model.OpenDB(cfg.DbDsn)
 	if err != nil {
 		log.Fatal(err)
@@ -23,8 +27,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	r := gin.Default()
-	r.GET("/health", func(c *gin.Context) {
+
+	userRepository := repository.NewUserRepository(db)
+	authService := service.NewAuthService(userRepository)
+	authHandler := handlers.NewAuthHandler(authService)
+	
+	router := apphttp.MovieDiaryRouter(authHandler)
+	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "ok"})
 	})
 
@@ -34,5 +43,5 @@ func main() {
 	}
 
 	log.Printf("server on :%s", port)
-	_ = r.Run(":" + port)
+	_ = router.Run(":" + port)
 }
