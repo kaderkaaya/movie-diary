@@ -82,3 +82,37 @@ func (c *Client) GetMovies(ctx context.Context, movieType string, genreID int, y
 
 	return movies, nil
 }
+
+func (c *Client) SearchMovies(ctx context.Context, movieName string) ([]model.Movie, error) {
+	var url string
+	apiKey := config.Load().TmdbApiKey
+	url = fmt.Sprintf(
+		"https://api.themoviedb.org/3/search/movie?api_key=%s&query=%s",
+		apiKey, movieName,
+	)
+	response, err := c.http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	var tmdbResp model_dto.TMDBResponse
+	err = json.Unmarshal(body, &tmdbResp)
+	if err != nil {
+		return nil, err
+	}
+
+	var movies []model.Movie
+	for _, tmdbMovie := range tmdbResp.Results {
+		movies = append(movies, model.Movie{
+			TmdbID:    tmdbMovie.ID,
+			Title:     tmdbMovie.Title,
+			Overview:  tmdbMovie.Overview,
+			PosterURL: tmdbMovie.PosterPath,
+		})
+	}
+	return movies, nil
+}

@@ -19,7 +19,7 @@ func NewMovieHandler(service *service.MovieService) *MovieHandler {
 
 func (movieHandler *MovieHandler) ListMovies(c *gin.Context) {
 	var req model_dto.ListMoviesRequest
-	
+
 	if err := c.ShouldBindUri(&req); err != nil {
 		utils.Fail(c, http.StatusBadRequest, err.Error())
 		return
@@ -36,4 +36,25 @@ func (movieHandler *MovieHandler) ListMovies(c *gin.Context) {
 		return
 	}
 	utils.Success(c, http.StatusOK, "movies", movies, "Movies discovered successfully")
+}
+
+func (movieHandler *MovieHandler) SearchMovies(c *gin.Context) {
+	var req model_dto.SearchMoviesRequest
+
+	if err := c.ShouldBindUri(&req); err != nil {
+		utils.Fail(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := c.ShouldBindQuery(&req); err != nil {
+		utils.Fail(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	movies, err := movieHandler.service.SearchMovies(c.Request.Context(), req.MovieName)
+	if err != nil {
+		utils.Fail(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	utils.Success(c, http.StatusOK, "movies", movies, "Movies listed successfully")
 }

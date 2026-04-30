@@ -48,3 +48,7 @@ type TMDBResponse struct {
 	TotalPages   int         `json:"total_pages"`
 	TotalResults int         `json:"total_results"`
 }
+
+type SearchMoviesRequest struct {
+	MovieName string `form:"movie_name" binding:"omitempty,min=3,max=255"`
+}

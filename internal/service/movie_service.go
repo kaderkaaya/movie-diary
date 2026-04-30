@@ -43,3 +43,27 @@ func (movieService *MovieService) ListMovies(ctx context.Context, movieType stri
 		Items:      items,
 	}, nil
 }
+
+func (movieService *MovieService) SearchMovies(ctx context.Context, movieName string) (*model.MovieListResponse, error) {
+
+	movies, err := movieService.tmdbClient.SearchMovies(ctx, movieName)
+	if err != nil {
+		return nil, err
+	}
+	totalPages := len(movies)
+	totalItems := len(movies)
+	items := make([]model.MovieListItemResponse, len(movies))
+	for i, movie := range movies {
+		items[i] = model.MovieListItemResponse{
+			TmdbID:    movie.TmdbID,
+			Title:     movie.Title,
+			Overview:  movie.Overview,
+			PosterURL: movie.PosterURL,
+		}
+	}
+	return &model.MovieListResponse{
+		TotalPages: totalPages,
+		TotalItems: totalItems,
+		Items:      items,
+	}, nil
+}
