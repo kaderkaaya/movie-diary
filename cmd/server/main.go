@@ -6,6 +6,7 @@ import (
 	apphttp "moviediary/internal/http"
 	handlers "moviediary/internal/http/handlers"
 	model "moviediary/internal/model"
+	"moviediary/internal/provider/tmdb"
 	repository "moviediary/internal/repository"
 	service "moviediary/internal/service"
 	"os"
@@ -34,7 +35,13 @@ func main() {
 	authHandler := handlers.NewAuthHandler(authService)
 	tokenHandler := handlers.NewTokenHandler(service.NewTokenService(tokenRepository))
 
-	router := apphttp.MovieDiaryRouter(authHandler, tokenHandler)
+	movieRepository := repository.NewMovieRepository(db)
+	tmdbClient := tmdb.NewClient(cfg.TmdbApiKey)
+	movieService := service.NewMovieService(movieRepository, tmdbClient)
+	movieHandler := handlers.NewMovieHandler(movieService)
+
+	router := apphttp.MovieDiaryRouter(authHandler, tokenHandler, movieHandler)
+
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "ok"})
 	})
