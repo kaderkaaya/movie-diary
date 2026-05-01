@@ -13,7 +13,6 @@ type Config struct {
 	DbDsn      string
 	JwtSecret  string
 	TmdbApiKey string
-	OmdbApiKey string
 }
 
 func Load() *Config {
@@ -25,7 +24,6 @@ func Load() *Config {
 		DbDsn:      mustEnv("DB_DSN"),
 		JwtSecret:  mustEnv("JWT_SECRET"),
 		TmdbApiKey: mustEnv("TMDB_API_KEY"),
-		OmdbApiKey: mustEnv("OMDB_API_KEY"),
 	}
 }
 
