@@ -24,6 +24,7 @@ func (diaryRepository *DiaryRepository) AddDiary(ctx context.Context, userId uin
 		Comment:   comment,
 		Rating:    float32(rating),
 		WatchedAt: watchedAt,
+		IsWatched: true,
 	}
 	if err := diaryRepository.db.WithContext(ctx).Create(diary).Error; err != nil {
 		return nil, err

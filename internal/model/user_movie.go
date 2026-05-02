@@ -15,7 +15,4 @@ type UserMovie struct {
 	WatchedAt  time.Time `gorm:"not null"`
 	IsWatched  bool      `gorm:"default:false"`
 	IsFavorite bool      `gorm:"default:false"`
-
-	User  User  `gorm:"foreignKey:UserID"`
-	Movie Movie `gorm:"foreignKey:MovieID"`
 }
