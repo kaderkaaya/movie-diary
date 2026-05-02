@@ -58,3 +58,19 @@ func (movieHandler *MovieHandler) SearchMovies(c *gin.Context) {
 	}
 	utils.Success(c, http.StatusOK, "movies", movies, "Movies listed successfully")
 }
+
+func (movieHandler *MovieHandler) GetMovieDetail(c *gin.Context) {
+	var req model_dto.GetMovieDetailRequest
+
+	if err := c.ShouldBindQuery(&req); err != nil {
+		utils.Fail(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	movieDetail, err := movieHandler.service.GetMovieDetail(c.Request.Context(), req.TmdbID)
+	if err != nil {
+		utils.Fail(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	utils.Success(c, http.StatusOK, "movieDetail", movieDetail, "Movie detail retrieved successfully")
+}

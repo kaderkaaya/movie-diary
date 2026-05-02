@@ -5,6 +5,7 @@ import (
 	model "moviediary/internal/model/dto"
 	provider "moviediary/internal/provider/tmdb"
 	repository "moviediary/internal/repository"
+	apperror "moviediary/pkg/apperror"
 	"time"
 )
 
@@ -65,5 +66,25 @@ func (movieService *MovieService) SearchMovies(ctx context.Context, movieName st
 		TotalPages: totalPages,
 		TotalItems: totalItems,
 		Items:      items,
+	}, nil
+}
+
+func (movieService *MovieService) GetMovieDetail(ctx context.Context, tmdbID int) (*model.GetMovieDetailResponse, error) {
+
+	movieDetail, err := movieService.tmdbClient.GetMovieDetail(ctx, tmdbID)
+	if err != nil {
+		return nil, err
+	}
+	if movieDetail == nil {
+		return nil, apperror.ErrMovieNotFound
+	}
+
+	return &model.GetMovieDetailResponse{
+		TmdbID:      tmdbID,
+		Title:       movieDetail.Title,
+		Overview:    movieDetail.Overview,
+		PosterURL:   movieDetail.PosterPath,
+		ReleaseDate: movieDetail.ReleaseDate,
+		Rating:      movieDetail.VoteAverage,
 	}, nil
 }

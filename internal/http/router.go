@@ -35,5 +35,10 @@ func MovieDiaryRouter(authHandler *handlers.AuthHandler, tokenHandler *handlers.
 	movie := r.Group("/movie")
 	movie.GET("/list-movies/:movie_type", movieHandler.ListMovies)
 	movie.GET("/search-movies", movieHandler.SearchMovies)
+	//movie.POST("/add-movie", movieHandler.AddMovie)
+	movie.GET("/movie-detail", movieHandler.GetMovieDetail)
+	//movie.POST("/delete-movie", movieHandler.DeleteMovie)
+	//
+
 	return r
 }

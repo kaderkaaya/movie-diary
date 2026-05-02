@@ -52,3 +52,16 @@ type TMDBResponse struct {
 type SearchMoviesRequest struct {
 	MovieName string `form:"movie_name" binding:"omitempty,min=3,max=255"`
 }
+
+type GetMovieDetailRequest struct {
+	TmdbID int `form:"tmdb_id" json:"tmdb_id" binding:"required,min=1"`
+}
+
+type GetMovieDetailResponse struct {
+	TmdbID      int     `json:"tmdb_id"`
+	Title       string  `json:"title"`
+	Overview    string  `json:"overview"`
+	PosterURL   string  `json:"poster_url"`
+	ReleaseDate string  `json:"release_date"`
+	Rating      float64 `json:"rating"`
+}

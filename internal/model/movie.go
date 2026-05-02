@@ -18,3 +18,12 @@ type Movie struct {
 	ImdbRating float32
 	FetchedAt  time.Time
 }
+
+type MovieDetail struct {
+	TmdbID      int     `json:"tmdb_id"`
+	Title       string  `json:"title"`
+	Overview    string  `json:"overview"`
+	PosterURL   string  `json:"poster_url"`
+	ReleaseDate string  `json:"release_date"`
+	Rating      float64 `json:"rating"`
+}
