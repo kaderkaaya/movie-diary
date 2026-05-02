@@ -11,7 +11,8 @@ type Movie struct {
 	ImdbID     string `gorm:"index;size:16"`
 	Title      string `gorm:"size:255;not null"`
 	Overview   string `gorm:"type:text"`
-	PosterURL  string `gorm:"size:512"`
-	Year       int
-	ImdbRating float32
+	PosterURL   string `gorm:"size:512"`
+	ReleaseDate string `gorm:"size:10"`
+	Year        int
+	ImdbRating  float32
 }

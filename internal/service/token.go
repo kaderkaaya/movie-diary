@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"log"
 	"time"
 
 	config "moviediary/internal/config"
@@ -30,11 +29,10 @@ func (tokenService *TokenService) RefreshToken(ctx context.Context, token string
 	if err != nil {
 		return nil, err
 	}
-	user, err := tokenService.userRepository.FindByID(ctx, userToken.UserID)
-	if err != nil {
-		return nil, err
-	}
-	log.Println("user", user)
+	//user, err := tokenService.userRepository.FindByID(ctx, userToken.UserID)
+	//if err != nil {
+	//	return nil, err
+	//}
 	if err != nil {
 		if err != apperror.ErrTokenNotFound {
 			return nil, err

@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"log"
 	model "moviediary/internal/model"
 	model_dto "moviediary/internal/model/dto"
 	provider "moviediary/internal/provider/tmdb"
@@ -44,7 +43,6 @@ func (s *DiaryService) AddDiary(
 	}
 
 	if movieInDB == nil {
-		log.Println("movie not found in db, getting from tmdb", tmdbID)
 		tmdbMovie, err := s.tmdbClient.GetMovieDetail(ctx, tmdbID)
 		if err != nil {
 			return nil, err

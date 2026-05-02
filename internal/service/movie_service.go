@@ -6,7 +6,6 @@ import (
 	provider "moviediary/internal/provider/tmdb"
 	repository "moviediary/internal/repository"
 	apperror "moviediary/pkg/apperror"
-	"time"
 )
 
 type MovieService struct {
@@ -33,7 +32,7 @@ func (movieService *MovieService) ListMovies(ctx context.Context, movieType stri
 			Title:       movie.Title,
 			Overview:    movie.Overview,
 			PosterURL:   movie.PosterURL,
-			ReleaseDate: time.Now().Format("2006-01-02"),
+			ReleaseDate: movie.ReleaseDate,
 			Rating:      float64(movie.ImdbRating),
 		}
 	}
@@ -51,15 +50,18 @@ func (movieService *MovieService) SearchMovies(ctx context.Context, movieName st
 	if err != nil {
 		return nil, err
 	}
+
 	totalPages := len(movies)
 	totalItems := len(movies)
 	items := make([]model.MovieListItemResponse, len(movies))
 	for i, movie := range movies {
 		items[i] = model.MovieListItemResponse{
-			TmdbID:    movie.TmdbID,
-			Title:     movie.Title,
-			Overview:  movie.Overview,
-			PosterURL: movie.PosterURL,
+			TmdbID:      movie.TmdbID,
+			Title:       movie.Title,
+			Overview:    movie.Overview,
+			PosterURL:   movie.PosterURL,
+			Rating:      float64(movie.ImdbRating),
+			ReleaseDate: movie.ReleaseDate,
 		}
 	}
 	return &model.MovieListResponse{

@@ -71,12 +71,13 @@ func (c *Client) GetMovies(ctx context.Context, movieType string, genreID int, y
 		}
 
 		movies = append(movies, model.Movie{
-			TmdbID:     tmdbMovie.ID,
-			Title:      tmdbMovie.Title,
-			Overview:   tmdbMovie.Overview,
-			PosterURL:  tmdbMovie.PosterPath,
-			Year:       movieYear,
-			ImdbRating: float32(tmdbMovie.VoteAverage),
+			TmdbID:      tmdbMovie.ID,
+			Title:       tmdbMovie.Title,
+			Overview:    tmdbMovie.Overview,
+			PosterURL:   tmdbMovie.PosterPath,
+			ReleaseDate: tmdbMovie.ReleaseDate,
+			Year:        movieYear,
+			ImdbRating:  float32(tmdbMovie.VoteAverage),
 		})
 	}
 
@@ -108,10 +109,12 @@ func (c *Client) SearchMovies(ctx context.Context, movieName string) ([]model.Mo
 	var movies []model.Movie
 	for _, tmdbMovie := range tmdbResp.Results {
 		movies = append(movies, model.Movie{
-			TmdbID:    tmdbMovie.ID,
-			Title:     tmdbMovie.Title,
-			Overview:  tmdbMovie.Overview,
-			PosterURL: tmdbMovie.PosterPath,
+			TmdbID:      tmdbMovie.ID,
+			Title:       tmdbMovie.Title,
+			Overview:    tmdbMovie.Overview,
+			PosterURL:   tmdbMovie.PosterPath,
+			ReleaseDate: tmdbMovie.ReleaseDate,
+			ImdbRating:  float32(tmdbMovie.VoteAverage),
 		})
 	}
 	return movies, nil
