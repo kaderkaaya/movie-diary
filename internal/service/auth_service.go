@@ -76,12 +76,14 @@ func (authService *AuthService) Login(ctx context.Context, email, password strin
 	if !userPassword {
 		return nil, apperror.ErrInvalidPassword
 	}
-	token, err := utils.GenerateJWT(user.ID, config.Load().JwtSecret, 24*time.Hour)
+	token, err := utils.GenerateJWT(user.ID, config.Load().JwtSecret, 7*24*time.Hour)
 	if err != nil {
 		return nil, err
 	}
 
-	authService.tokenRepository.CreateUserToken(ctx, user.ID, token)
+	if _, err := authService.tokenRepository.UpdateUserToken(ctx, user.ID, token); err != nil {
+		return nil, err
+	}
 	return &model.AuthResponse{
 		User:  user,
 		Token: token,

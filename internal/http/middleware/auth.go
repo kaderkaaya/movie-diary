@@ -2,6 +2,7 @@
 package middleware
 
 import (
+	"log"
 	"net/http"
 	"strings"
 
@@ -22,6 +23,7 @@ func AuthMiddleware(secret string) gin.HandlerFunc {
 		}
 
 		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
+		log.Println("tokenStr", tokenStr)
 
 		claims, err := utils.ParseJWT(tokenStr, secret)
 		if err != nil {
@@ -29,9 +31,9 @@ func AuthMiddleware(secret string) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
+		log.Println("claims", claims)
 		c.Set("userID", claims.UserID)
-
+		log.Println("userID", claims.UserID)
 		c.Next()
 	}
 }

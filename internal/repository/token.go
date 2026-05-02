@@ -44,12 +44,28 @@ func (tokenRepository *TokenRepository) FindByToken(ctx context.Context, token s
 	return &userToken, nil
 }
 
-func (tokenRepository *TokenRepository) UpdateUserToken(ctx context.Context, UserID uint, token string) (*model.UserTokens, error) {
-	if err := tokenRepository.db.WithContext(ctx).Model(&model.UserTokens{}).Where("user_id = ?", UserID).Update("token", token).Error; err != nil {
+func (tokenRepository *TokenRepository) UpdateUserToken(ctx context.Context, userID uint, token string) (*model.UserTokens, error) {
+	exp := time.Now().Add(7 * 24 * time.Hour)
+	var ut model.UserTokens
+	err := tokenRepository.db.WithContext(ctx).Where("user_id = ?", userID).Order("id DESC").First(&ut).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		ut = model.UserTokens{
+			UserID:    userID,
+			Token:     token,
+			ExpiresAt: exp,
+		}
+		if err := tokenRepository.db.WithContext(ctx).Create(&ut).Error; err != nil {
+			return nil, err
+		}
+		return &ut, nil
+	}
+	if err != nil {
 		return nil, err
 	}
-	return &model.UserTokens{
-		UserID: UserID,
-		Token:  token,
-	}, nil
+	ut.Token = token
+	ut.ExpiresAt = exp
+	if err := tokenRepository.db.WithContext(ctx).Save(&ut).Error; err != nil {
+		return nil, err
+	}
+	return &ut, nil
 }

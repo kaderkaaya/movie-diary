@@ -2,20 +2,23 @@ package service
 
 import (
 	"context"
+	"log"
+	"time"
+
 	config "moviediary/internal/config"
 	model "moviediary/internal/model"
 	repository "moviediary/internal/repository"
 	apperror "moviediary/pkg/apperror"
 	utils "moviediary/pkg/utils"
-	"time"
 )
 
 type TokenService struct {
 	tokenRepository *repository.TokenRepository
+	userRepository  *repository.UserRepository
 }
 
-func NewTokenService(tokenRepository *repository.TokenRepository) *TokenService {
-	return &TokenService{tokenRepository: tokenRepository}
+func NewTokenService(tokenRepository *repository.TokenRepository, userRepository *repository.UserRepository) *TokenService {
+	return &TokenService{tokenRepository: tokenRepository, userRepository: userRepository}
 }
 
 func (tokenService *TokenService) RefreshToken(ctx context.Context, token string) (*model.UserTokens, error) {
@@ -27,6 +30,29 @@ func (tokenService *TokenService) RefreshToken(ctx context.Context, token string
 	if err != nil {
 		return nil, err
 	}
+	user, err := tokenService.userRepository.FindByID(ctx, userToken.UserID)
+	if err != nil {
+		return nil, err
+	}
+	log.Println("user", user)
+	if err != nil {
+		if err != apperror.ErrTokenNotFound {
+			return nil, err
+		}
+		claims, errJWT := utils.ParseJWT(token, config.Load().JwtSecret)
+		if errJWT != nil {
+			return nil, apperror.ErrTokenNotFound
+		}
+		expAt := time.Now().Add(7 * 24 * time.Hour)
+		if claims.ExpiresAt != nil {
+			expAt = claims.ExpiresAt.Time
+		}
+		userToken = &model.UserTokens{
+			UserID:    claims.UserID,
+			Token:     token,
+			ExpiresAt: expAt,
+		}
+	}
 
 	if userToken.ExpiresAt.Before(time.Now()) {
 		return nil, apperror.ErrTokenExpired
@@ -36,9 +62,5 @@ func (tokenService *TokenService) RefreshToken(ctx context.Context, token string
 	if err != nil {
 		return nil, err
 	}
-	userToken, err = tokenService.tokenRepository.UpdateUserToken(ctx, userToken.UserID, newToken)
-	if err != nil {
-		return nil, err
-	}
-	return userToken, nil
+	return tokenService.tokenRepository.UpdateUserToken(ctx, userToken.UserID, newToken)
 }

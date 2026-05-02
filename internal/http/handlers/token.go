@@ -1,12 +1,14 @@
 package handlers
 
 import (
-	model_dto "moviediary/internal/model/dto"
-	service "moviediary/internal/service"
-	utils "moviediary/pkg/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	model_dto "moviediary/internal/model/dto"
+	service "moviediary/internal/service"
+	apperror "moviediary/pkg/apperror"
+	utils "moviediary/pkg/utils"
 )
 
 type TokenHandler struct {
@@ -25,7 +27,12 @@ func (tokenHandler *TokenHandler) RefreshToken(c *gin.Context) {
 	}
 	token, err := tokenHandler.service.RefreshToken(c.Request.Context(), req.Token)
 	if err != nil {
-		utils.Fail(c, http.StatusInternalServerError, err.Error())
+		switch err {
+		case apperror.ErrTokenEmpty, apperror.ErrTokenNotFound, apperror.ErrInvalidToken, apperror.ErrTokenExpired:
+			utils.Fail(c, http.StatusUnauthorized, err.Error())
+		default:
+			utils.Fail(c, http.StatusInternalServerError, err.Error())
+		}
 		return
 	}
 	utils.Success(c, http.StatusOK, "token", token, "Token refreshed successfully")
