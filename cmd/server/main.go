@@ -28,19 +28,25 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	//Auth
 	userRepository := repository.NewUserRepository(db)
 	tokenRepository := repository.NewTokenRepository(db)
 	authService := service.NewAuthService(userRepository, tokenRepository)
 	authHandler := handlers.NewAuthHandler(authService)
-	tokenHandler := handlers.NewTokenHandler(service.NewTokenService(tokenRepository))
+	tokenHandler := handlers.NewTokenHandler(service.NewTokenService(tokenRepository, userRepository))
 
+	//Movie
 	movieRepository := repository.NewMovieRepository(db)
 	tmdbClient := tmdb.NewClient(cfg.TmdbApiKey)
 	movieService := service.NewMovieService(movieRepository, tmdbClient)
 	movieHandler := handlers.NewMovieHandler(movieService)
 
-	router := apphttp.MovieDiaryRouter(authHandler, tokenHandler, movieHandler)
+	//Diary
+	diaryRepository := repository.NewDiaryRepository(db)
+	diaryService := service.NewDiaryService(diaryRepository, movieRepository, tmdbClient)
+	diaryHandler := handlers.NewDiaryHandler(diaryService)
+
+	router := apphttp.MovieDiaryRouter(authHandler, tokenHandler, movieHandler, diaryHandler)
 
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "ok"})

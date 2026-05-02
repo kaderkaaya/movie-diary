@@ -7,11 +7,13 @@ import (
 	"github.com/gin-contrib/timeout"
 	"github.com/gin-gonic/gin"
 
+	"moviediary/internal/config"
 	handlers "moviediary/internal/http/handlers"
+	"moviediary/internal/http/middleware"
 	utils "moviediary/pkg/utils"
 )
 
-func MovieDiaryRouter(authHandler *handlers.AuthHandler, tokenHandler *handlers.TokenHandler, movieHandler *handlers.MovieHandler) *gin.Engine {
+func MovieDiaryRouter(authHandler *handlers.AuthHandler, tokenHandler *handlers.TokenHandler, movieHandler *handlers.MovieHandler, diaryHandler *handlers.DiaryHandler) *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger()) //r.Use olusturunca middle olsuturduk.
 	r.Use(gin.Recovery())
@@ -35,10 +37,11 @@ func MovieDiaryRouter(authHandler *handlers.AuthHandler, tokenHandler *handlers.
 	movie := r.Group("/movie")
 	movie.GET("/list-movies/:movie_type", movieHandler.ListMovies)
 	movie.GET("/search-movies", movieHandler.SearchMovies)
-	//movie.POST("/add-movie", movieHandler.AddMovie)
 	movie.GET("/movie-detail", movieHandler.GetMovieDetail)
-	//movie.POST("/delete-movie", movieHandler.DeleteMovie)
-	//
 
+	//Diary
+	diary := r.Group("/diary")
+	diary.Use(middleware.AuthMiddleware(config.Load().JwtSecret))
+	diary.POST("/add-diary", diaryHandler.AddDiary)
 	return r
 }
