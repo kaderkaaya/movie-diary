@@ -35,7 +35,7 @@ func (tokenRepository *TokenRepository) CreateUserToken(ctx context.Context, Use
 
 func (tokenRepository *TokenRepository) FindByToken(ctx context.Context, token string) (*model.UserTokens, error) {
 	var userToken model.UserTokens
-	if err := tokenRepository.db.WithContext(ctx).Where("token = ?", token).First(&userToken).Error; err != nil {
+	if err := tokenRepository.db.WithContext(ctx).Preload("User").Where("token = ?", token).First(&userToken).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, apperror.ErrTokenNotFound
 		}
@@ -57,7 +57,7 @@ func (tokenRepository *TokenRepository) UpdateUserToken(ctx context.Context, use
 		if err := tokenRepository.db.WithContext(ctx).Create(&ut).Error; err != nil {
 			return nil, err
 		}
-		return &ut, nil
+		return tokenRepository.userTokenByID(ctx, ut.ID)
 	}
 	if err != nil {
 		return nil, err
@@ -67,5 +67,13 @@ func (tokenRepository *TokenRepository) UpdateUserToken(ctx context.Context, use
 	if err := tokenRepository.db.WithContext(ctx).Save(&ut).Error; err != nil {
 		return nil, err
 	}
-	return &ut, nil
+	return tokenRepository.userTokenByID(ctx, ut.ID)
+}
+
+func (tokenRepository *TokenRepository) userTokenByID(ctx context.Context, id uint) (*model.UserTokens, error) {
+	var out model.UserTokens
+	if err := tokenRepository.db.WithContext(ctx).Preload("User").First(&out, id).Error; err != nil {
+		return nil, err
+	}
+	return &out, nil
 }
