@@ -55,3 +55,11 @@ func (diaryRepository *DiaryRepository) RemoveDiary(ctx context.Context, userId 
 	}
 	return nil
 }
+
+func (diaryRepository *DiaryRepository) GetByUserID(ctx context.Context, userId uint, page int, pageSize int) ([]*model.UserMovie, error) {
+	var diaryList []*model.UserMovie
+	if err := diaryRepository.db.WithContext(ctx).Where("user_id = ?", userId).Order("watched_at DESC").Offset((page - 1) * pageSize).Limit(pageSize).Find(&diaryList).Error; err != nil {
+		return nil, err
+	}
+	return diaryList, nil
+}

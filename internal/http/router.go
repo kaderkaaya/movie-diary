@@ -13,7 +13,12 @@ import (
 	utils "moviediary/pkg/utils"
 )
 
-func MovieDiaryRouter(authHandler *handlers.AuthHandler, tokenHandler *handlers.TokenHandler, movieHandler *handlers.MovieHandler, diaryHandler *handlers.DiaryHandler) *gin.Engine {
+func MovieDiaryRouter(
+	authHandler *handlers.AuthHandler,
+	tokenHandler *handlers.TokenHandler,
+	movieHandler *handlers.MovieHandler,
+	diaryHandler *handlers.DiaryHandler,
+) *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger()) //r.Use olusturunca middle olsuturduk.
 	r.Use(gin.Recovery())
@@ -44,7 +49,7 @@ func MovieDiaryRouter(authHandler *handlers.AuthHandler, tokenHandler *handlers.
 	diary.Use(middleware.AuthMiddleware(config.Load().JwtSecret))
 	diary.POST("/add-diary", diaryHandler.AddDiary)
 	diary.POST("/remove-diary", diaryHandler.RemoveDiary)
-	//diary.GET("/get-diary-list", diaryHandler.GetDiaryList)
+	diary.GET("/get-diary-list", diaryHandler.GetDiaryList)
 
 	return r
 }

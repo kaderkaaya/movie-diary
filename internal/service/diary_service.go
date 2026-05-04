@@ -98,3 +98,30 @@ func (s *DiaryService) RemoveDiary(ctx context.Context, userID uint, movieId int
 	}
 	return s.diaryRepository.RemoveDiary(ctx, userID, movieId)
 }
+
+func (s *DiaryService) GetDiaryList(ctx context.Context, userID uint, page int, pageSize int) (*model_dto.GetDiaryListResponse, error) {
+	diaryList, err := s.diaryRepository.GetByUserID(ctx, userID, page, pageSize)
+	if err != nil {
+		return nil, err
+	}
+	totalPages := len(diaryList) / pageSize
+	totalItems := len(diaryList)
+	items := make([]*model.UserMovie, len(diaryList))
+	for i, diary := range diaryList {
+		items[i] = &model.UserMovie{
+			MovieID:    diary.MovieID,
+			Rating:     diary.Rating,
+			Comment:    diary.Comment,
+			WatchedAt:  diary.WatchedAt,
+			IsWatched:  diary.IsWatched,
+			IsFavorite: diary.IsFavorite,
+		}
+	}
+	return &model_dto.GetDiaryListResponse{
+		Page:       page,
+		Items:      items,
+		TotalPages: totalPages,
+		TotalItems: totalItems,
+		Message:    "Diary listed successfully",
+	}, nil
+}

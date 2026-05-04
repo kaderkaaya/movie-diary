@@ -66,3 +66,44 @@ func (diaryHandler *DiaryHandler) RemoveDiary(c *gin.Context) {
 	}
 	utils.Success(c, http.StatusOK, "diary", nil, "Diary removed successfully")
 }
+
+func (diaryHandler *DiaryHandler) GetDiaryList(c *gin.Context) {
+	var req model_dto.GetDiaryListRequest
+
+	if err := c.ShouldBindQuery(&req); err != nil {
+		utils.Fail(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	userIDValue, exists := c.Get("userID")
+	if !exists {
+		utils.Fail(c, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	userID, ok := userIDValue.(uint)
+	if !ok {
+		utils.Fail(c, http.StatusUnauthorized, "Invalid user id")
+		return
+	}
+
+	diaryList, err := diaryHandler.service.GetDiaryList(
+		c.Request.Context(),
+		userID,
+		req.Page,
+		req.PageSize,
+	)
+
+	if err != nil {
+		utils.Fail(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	utils.Success(
+		c,
+		http.StatusOK,
+		"diaryList",
+		diaryList,
+		"Diary listed successfully",
+	)
+}

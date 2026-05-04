@@ -8,7 +8,6 @@ import (
 	"time"
 )
 
-// FlexibleDateTime accepts RFC3339 or date-only "2006-01-02" in JSON.
 type FlexibleDateTime struct {
 	time.Time
 }
@@ -47,4 +46,17 @@ type AddDiaryResponse struct {
 
 type RemoveDiaryRequest struct {
 	MovieId int `json:"movie_id" binding:"required,min=1"`
+}
+
+type GetDiaryListRequest struct {
+	Page     int `form:"page" binding:"required,min=1"`
+	PageSize int `form:"page_size" binding:"required,min=1,max=100"`
+}
+
+type GetDiaryListResponse struct {
+	Page       int                `json:"page"`
+	Items      []*model.UserMovie `json:"items"`
+	TotalPages int                `json:"total_pages"`
+	TotalItems int                `json:"total_items"`
+	Message    string             `json:"message"`
 }
