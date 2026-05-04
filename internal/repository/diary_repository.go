@@ -43,3 +43,15 @@ func (diaryRepository *DiaryRepository) GetByUserIDAndMovieID(ctx context.Contex
 
 	return &diary, nil
 }
+
+func (diaryRepository *DiaryRepository) RemoveDiary(ctx context.Context, userId uint, movieId int) error {
+	if err := diaryRepository.db.
+		WithContext(ctx).
+		Model(&model.UserMovie{}).
+		Where("user_id = ? AND movie_id = ?", userId, movieId).
+		Update("is_watched", false).
+		Error; err != nil {
+		return err
+	}
+	return nil
+}

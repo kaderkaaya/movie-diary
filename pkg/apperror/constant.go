@@ -17,4 +17,5 @@ var (
 	ErrMovieNotFound              = CreateError(1014, "Movie not found")
 	ErrMovieNotFoundTmdb          = CreateError(1015, "Movie not found in TMDB")
 	ErrDiaryAlreadyExists         = CreateError(1016, "Diary already exists")
+	ErrDiaryNotFound              = CreateError(1017, "Diary not found")
 )

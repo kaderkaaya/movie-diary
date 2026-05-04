@@ -87,3 +87,14 @@ func (s *DiaryService) AddDiary(
 		Message: "Diary created successfully",
 	}, nil
 }
+
+func (s *DiaryService) RemoveDiary(ctx context.Context, userID uint, movieId int) error {
+	diary, err := s.diaryRepository.GetByUserIDAndMovieID(ctx, userID, movieId)
+	if err != nil {
+		return err
+	}
+	if diary == nil {
+		return apperror.ErrDiaryNotFound
+	}
+	return s.diaryRepository.RemoveDiary(ctx, userID, movieId)
+}

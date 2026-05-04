@@ -43,7 +43,7 @@ func MovieDiaryRouter(authHandler *handlers.AuthHandler, tokenHandler *handlers.
 	diary := r.Group("/diary")
 	diary.Use(middleware.AuthMiddleware(config.Load().JwtSecret))
 	diary.POST("/add-diary", diaryHandler.AddDiary)
-	//diary.POST("/remove-diary", diaryHandler.RemoveDiary)
+	diary.POST("/remove-diary", diaryHandler.RemoveDiary)
 	//diary.GET("/get-diary-list", diaryHandler.GetDiaryList)
 
 	return r

@@ -44,3 +44,7 @@ type AddDiaryResponse struct {
 	Diary   *model.UserMovie `json:"user_movie"`
 	Message string           `json:"message"`
 }
+
+type RemoveDiaryRequest struct {
+	MovieId int `json:"movie_id" binding:"required,min=1"`
+}
